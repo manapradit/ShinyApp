@@ -1,5 +1,6 @@
 # Distribution App
 library(shiny)
+library(moments)
 ui <- fluidPage(
   wellPanel(h2('The Normal Density'),
             'The effect of the mean and the standard deviation'),
@@ -14,7 +15,7 @@ ui <- fluidPage(
     )),
     column(4, wellPanel(
       # random sample
-      numericInput('n', label='Sample Size', min=0, max=1000, value=50, step=1),
+      numericInput('n', label='Sample Size', min=0, max=10000, value=50, step=1),
       # buttton to run the sample size
       actionButton("do", "Random"),
       # checkbox for displaying density
@@ -23,10 +24,11 @@ ui <- fluidPage(
       conditionalPanel(
         condition="input.dens % 2 == 1",
         sliderInput('dens_smooth', label='Density Smoothness',
-                    min=0.1, 10, value=0.5, step=.1))
+                    min=0.1, 5, value=0.5, step=.1))
     )),
     column(8, wellPanel(
-      plotOutput('simulate')
+      plotOutput('simulate'),
+      tableOutput('random_summary')
     ))
   )
 )
@@ -55,14 +57,14 @@ server <- function(input, output) {
     }
   })
   
-  # Add output of random button
+  # Output of random button
   random_points <- eventReactive(input$do, {
     rnorm(n=input$n, mean=input$mu, sd=input$sigma)
-  }) 
+  }, ignoreNULL = FALSE
+  ) 
   # Add output of simulated sample plot and density
   output$simulate <- renderPlot({
     # Plot histogram of sample points
-    x_bbb = 'N='
     hist(random_points(), freq = FALSE, ylim=c(0, .4), xlim=c(-10,20),
          ylab='Density', xlab='Random Samples', main='Plot of simulated sample')
     # Checkbox to show density curve overlayed on the histogram
@@ -71,6 +73,22 @@ server <- function(input, output) {
       lines(density(random_points(), bw=input$dens_smooth), col="red")
     }
   })
+  
+  # Output of summary
+  output$random_summary <- renderTable({
+    data.frame(
+      N = as.character(length(random_points())),
+      Median = as.character(round(median(random_points()),2)),
+      Mean = as.character(round(mean(random_points()),2)),
+      SD = as.character(round(sd(random_points()),2)),
+      Min = as.character(round(min(random_points()),2)),
+      Max = as.character(round(max(random_points()),2)),
+      Skweeness = as.character(round(moments::skewness(random_points()),2)),
+      Kurtosis = as.character(round(moments::kurtosis(random_points()),2))
+    )
+    
+  }, width = "100%"
+  )
 }
 
 shinyApp(ui = ui, server = server, options=list(height=600))

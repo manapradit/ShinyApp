@@ -24,7 +24,7 @@ random_tab <- function(){
 }
 
 
-
+###############################    UI    ####################################
 ui <- fluidPage(
   tabsetPanel(
     tabPanel("Normal",
@@ -42,8 +42,19 @@ ui <- fluidPage(
                  plotOutput('normaldist')
                )),
                # Input for sampling
-               column(4, random_tab()
-               ),
+               column(4,   wellPanel(
+                 # Random sample size
+                 numericInput('n', label='Sample Size', min=0, max=10000, value=50, step=1),
+                 # Button to run the sample size
+                 actionButton("do1", "Random"),
+                 # Checkbox for displaying density
+                 checkboxInput('dens', label='Show the Density Curve', value=FALSE),
+                 # Condition to display smoothness when selected the checkbox
+                 conditionalPanel(
+                   condition="input.dens % 2 == 1",
+                   sliderInput('dens_smooth', label='Density Smoothness',
+                               min=0.1, 5, value=0.5, step=.1))
+               )),
                # Plot of simulated Sample
                column(8, wellPanel(
                  plotOutput('simulate1'),
@@ -67,8 +78,19 @@ ui <- fluidPage(
                column(8, wellPanel(
                  plotOutput('binomdist')
                )),
-               column(4, random_tab()
-               ),
+               column(4,   wellPanel(
+                 # Random sample size
+                 numericInput('n', label='Sample Size', min=0, max=10000, value=50, step=1),
+                 # Button to run the sample size
+                 actionButton("do2", "Random"),
+                 # Checkbox for displaying density
+                 checkboxInput('dens', label='Show the Density Curve', value=FALSE),
+                 # Condition to display smoothness when selected the checkbox
+                 conditionalPanel(
+                   condition="input.dens % 2 == 1",
+                   sliderInput('dens_smooth', label='Density Smoothness',
+                               min=0.1, 5, value=0.5, step=.1))
+               )),
                # Plot of simulated Sample
                column(8, wellPanel(
                  plotOutput('simulate2'),
@@ -91,7 +113,19 @@ ui <- fluidPage(
                column(8, wellPanel(
                  plotOutput('gammadist')
                )),
-               column(4, random_tab()
+               column(4,   wellPanel(
+                 # Random sample size
+                 numericInput('n', label='Sample Size', min=0, max=10000, value=50, step=1),
+                 # Button to run the sample size
+                 actionButton("do3", "Random"),
+                 # Checkbox for displaying density
+                 checkboxInput('dens', label='Show the Density Curve', value=FALSE),
+                 # Condition to display smoothness when selected the checkbox
+                 conditionalPanel(
+                   condition="input.dens % 2 == 1",
+                   sliderInput('dens_smooth', label='Density Smoothness',
+                               min=0.1, 5, value=0.5, step=.1))
+               )
                ),
                # Plot of simulated Sample
                column(8, wellPanel(
@@ -105,7 +139,7 @@ ui <- fluidPage(
 
 
 
-
+##############################   Function  ##################################
 
 # Function for type of the random sampling plot (Without input$do)
 plot_random_type <-function(rtype, input1, input2, input3) {
@@ -139,7 +173,7 @@ plot_random_type2 <-function(rtype, input0, input1, input2, input3) {
 
 
 
-
+###############################   Server  ####################################
 
 server <- function(input, output) {
   # TAB 1 Output normal distribution
@@ -223,7 +257,7 @@ server <- function(input, output) {
   
   
   # Output of random button
-  random_points2 <- eventReactive(input$do, {
+  random_points2 <- eventReactive(input$do2, {
     plot_random_type('rbinomial', input$n, input$binomsize, input$binomprob)
   }, ignoreNULL = FALSE)
   
@@ -258,7 +292,7 @@ server <- function(input, output) {
   
   
   # Output of random button
-  random_points3 <- eventReactive(input$do, {
+  random_points3 <- eventReactive(input$do3, {
     plot_random_type('rgamma', input$n, input$gammashape, input$gammarate)
   }, ignoreNULL = FALSE) 
   

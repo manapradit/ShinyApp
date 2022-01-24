@@ -106,8 +106,8 @@ ui <- fluidPage(
              fluidRow(
                # Input for normal density plot
                column(4, wellPanel(
-                 sliderInput('gammashape', label='Shape and scale parameters', min=0, max=10, value=6, step=0.1),
-                 sliderInput('gammarate', label='Rate (Scale=1/Rate)', min=0, max=10, value=1, step=.1),
+                 sliderInput('gammashape', label='Shape', min=0, max=10, value=6, step=0.1),
+                 sliderInput('gammascale', label='Scale', min=0, max=10, value=1, step=.1),
                )),
                # Plot of normal density
                column(8, wellPanel(
@@ -200,7 +200,7 @@ server <- function(input, output) {
   
   
   # Output of random button
-  random_points <- eventReactive(input$do, {
+  random_points <- eventReactive(input$do1 , {
     plot_random_type('rnormal', input$n, input$mu, input$sigma)
   }, ignoreNULL = FALSE)
   
@@ -284,10 +284,11 @@ server <- function(input, output) {
   
   # TAB 3 Output gamma distribution
   output$gammadist <- renderPlot({
-    y <- dgamma(seq(0, 2, by = 0.04), shape = input$gammashape, rate=input$gammarate)
-    #    y <- dbinom(x=input$binomx[1]:input$binomx[2], size=input$binomsize, prob=input$binomprob)
-    plot(y, type='l', #ylim=c(0, 5), xlim = c(-10,50),
-         ylab='Density', main='Plot of Binomial density')
+    x <- seq(0, 100, by = 0.1)
+    y <- dgamma(x, shape=input$gammashape, scale=input$gammascale)
+
+    plot(x,y, type='l', #ylim=c(0, 5), xlim = c(-10,50),
+         ylab='Density', main='Plot of Gamma density')
   })   
   
   

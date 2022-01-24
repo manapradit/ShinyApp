@@ -1,0 +1,143 @@
+---
+title: "Test Idea"
+author: "Kanyanee"
+date: "1/12/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(shiny)
+library(Rlab) #Bernoulli
+
+ui <- fluidPage(
+  wellPanel(h2('Type of Density in Statistics')),
+  fluidRow(
+    column(4, wellPanel(
+      plotOutput('normaldist'),
+      sliderInput('mu', label='Mean', min=0, max=10, value=3, step=.1),
+      sliderInput('sigma', label='Standard Deviation', min=1, 4, value=2, step=.1)
+    )),
+    column(4, wellPanel(
+      plotOutput('tdist'),
+      sliderInput('tdf', label='Degrees of freedom (df>0)', min=0, max=10, value=3, step=.1)
+    )),    
+    column(4, wellPanel(
+      plotOutput('unifdist'),
+      sliderInput('uniflimits', label='Lowwer and upper limits of the distribution', min=-5, max=15, value=c(-2,7), step=.1)
+    ))   
+  ),
+  
+  
+  fluidRow(  
+    column(4, wellPanel(
+      plotOutput('gammadist'),
+      sliderInput('gammak', label='Shape parameter (K>0)', min=0, max=5, value=3, step=.1),
+      sliderInput('gammatheta', label='Scale parameter (Theta>0)', min=0, max=3, value=1.5, step=.1)
+    )), 
+    column(4, wellPanel(
+      plotOutput('binomdist'),
+      sliderInput('binomn', label='Size', min=0, max=1, value=0.3, step=.01),      
+      sliderInput('binomp', label='Probability of success on each trial', min=0, max=1, value=0.3, step=.01)
+    )),    
+    column(4, wellPanel(
+      plotOutput('berndist'),
+      sliderInput('bernp', label='Probability of success on each trial', min=0, max=1, value=0.3, step=.01)
+    ))
+  ),
+  
+  fluidRow(  
+    column(4, wellPanel(
+      plotOutput('poisdist'),
+      sliderInput('poislambda', label='Vector of means (Lambda)', min=0, max=10, value=3, step=.1)
+    )), 
+    column(4, wellPanel(
+      plotOutput('chidist'),
+      sliderInput('binomn', label='Size', min=0, max=1, value=0.3, step=.01),      
+      sliderInput('binomp', label='Probability of success on each trial', min=0, max=1, value=0.3, step=.01)
+    )),    
+    column(4, wellPanel(
+      plotOutput('expodist'),
+      sliderInput('bernp', label='Probability of success on each trial', min=0, max=1, value=0.3, step=.01)
+    ))
+  ),  
+  
+  fluidRow(
+    column(6, wellPanel(
+
+      
+      
+      
+    )),
+    column(6, wellPanel(
+
+    ))
+  )  
+  
+  
+  
+  
+  
+  
+  
+)
+
+
+
+
+
+
+server <- function(input, output) {
+  output$normaldist <- renderPlot({
+    x <- seq(from=-12, to=22, by=.1)
+    y <- dnorm(x, mean=input$mu, sd=input$sigma)
+    plot(x,y, type='l', ylim=c(0, .4),
+         ylab='Density', main='Plot of normal density')
+  })
+  output$unifdist <- renderPlot({
+    x <- seq(from=-12, to=22, by=.1)
+    y <- dunif(x, min=input$uniflimits[1], max=input$uniflimits[2])
+    plot(x,y, type='l', ylim=c(0, .4),
+         ylab='Density', main='Plot of uniform density')
+  })
+  output$tdist <- renderPlot({
+    x <- seq(from=-12, to=22, by=.1)
+    y <- dt(x, df=input$tdf)
+    plot(x,y, type='l', ylim=c(0, .4),
+         ylab='Density', main='Plot of t-test density')
+  })
+  output$berndist <- renderPlot({
+    x <- seq(from=-12, to=22, by=.1)
+    y <- dbern(x, prob=input$bernp)
+    plot(x,y, type='l', ylim=c(0, .4),
+         ylab='Density', main='Plot of Bernoulli density')
+  })
+  output$gammadist <- renderPlot({
+    x <- seq(from=-12, to=22, by=.1)
+    y <- dgamma(x, shape=input$gammak, rate=input$gammatheta)
+    plot(x,y, type='l', ylim=c(0, .4),
+         ylab='Density', main='Plot of gamma density')
+  })
+  output$binomdist <- renderPlot({
+    x <- seq(from=-12, to=22, by=.1)
+    y <- dbinom(x, size=input$binomn, prob=input$binomp)
+    plot(x,y, type='l', ylim=c(0, .4),
+         ylab='Density', main='Plot of binomial density')
+  })  
+  output$poisdist <- renderPlot({
+    x <- seq(from=-12, to=22, by=.1)
+    y <- dpois(x, lambda=input$poislambda)
+    plot(x,y, type='l', ylim=c(0, .4),
+         ylab='Density', main='Plot of Poisson density')
+  })
+
+}
+
+shinyApp(ui = ui, server = server)#, options=list(height=600))
+
+```
+
+

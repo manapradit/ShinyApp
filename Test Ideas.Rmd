@@ -11,6 +11,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(shiny)
+ui <- fluidPage(
+  "Hello, world!"
+)
+server <- function(input, output, session) {
+}
+shinyApp(ui, server)
+```
+
+
+
+
+```{r}
+library(shiny)
 library(Rlab) #Bernoulli
 
 ui <- fluidPage(
@@ -139,5 +152,50 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)#, options=list(height=600))
 
 ```
+
+```{r}
+library(shiny)
+ui <- fluidPage(
+
+)
+
+
+
+server <- function(input, output, session) {
+}
+
+
+
+
+
+shinyApp(ui, server)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

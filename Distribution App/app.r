@@ -58,7 +58,7 @@ ui <- fluidPage(
                # Plot of simulated Sample
                column(8, wellPanel(
                  plotOutput('simulate1'),
-                 tableOutput('random_summary')
+                 tableOutput('random_summary1')
                ))
              ) 
     ),
@@ -71,7 +71,7 @@ ui <- fluidPage(
                # Input for normal density plot
                column(4, wellPanel(
                  sliderInput('binomsize', label='Number of trials', min=0, max=20, value=8, step=1),
-                 sliderInput('binomprob', label='Probability of success on each trial', min=0, max=1, value=0.5, step=.01),
+                 sliderInput('binomprob', label='Probability of success on each trial', min=0, max=1, value=0.3, step=.01),
                )),
                # Plot of normal density
                column(8, wellPanel(
@@ -93,7 +93,7 @@ ui <- fluidPage(
                # Plot of simulated Sample
                column(8, wellPanel(
                  plotOutput('simulate2'),
-                 #tableOutput('random_summary')
+                 tableOutput('random_summary2')
                ))
              )             
     ),
@@ -105,8 +105,8 @@ ui <- fluidPage(
              fluidRow(
                # Input for normal density plot
                column(4, wellPanel(
-                 sliderInput('gammashape', label='Shape', min=0, max=10, value=6, step=0.1),
-                 sliderInput('gammascale', label='Scale', min=0, max=10, value=1, step=.1),
+                 sliderInput('gammashape', label='Shape', min=0, max=10, value=3, step=0.1),
+                 sliderInput('gammascale', label='Scale', min=0, max=10, value=2, step=.1),
                )),
                # Plot of normal density
                column(8, wellPanel(
@@ -129,7 +129,7 @@ ui <- fluidPage(
                # Plot of simulated Sample
                column(8, wellPanel(
                  plotOutput('simulate3'),
-                 #tableOutput('random_summary')
+                 tableOutput('random_summary3')
                ))
              )
     )
@@ -226,7 +226,7 @@ server <- function(input, output) {
   })
   
   # Output of summary
-  output$random_summary <- renderTable({
+  output$random_summary1 <- renderTable({
     data.frame(
       #      Name = c("Mean", "SD"),
       #      Value = as.character(c(round(mean(random_points()),2), 
@@ -277,7 +277,19 @@ server <- function(input, output) {
     }
   })
   
-  
+  # Output of summary
+  output$random_summary2 <- renderTable({
+    data.frame(
+      N = as.character(input$n),
+      Median = as.character(round(median(random_points2()),2)),
+      Mean = as.character(round(mean(random_points2()),2)),
+      SD = as.character(round(sd(random_points2()),2)),
+      Min = as.character(round(min(random_points2()),2)),
+      Max = as.character(round(max(random_points2()),2)),
+      Skweeness = as.character(round(skewness(random_points2()),2)),
+      Kurtosis = as.character(round(kurtosis(random_points2()),2))
+    )
+  }, width = "100%")
   
   
   
@@ -301,6 +313,23 @@ server <- function(input, output) {
          ylab='Density', xlab='Random Samples', main='Plot of simulated sample')
     
 
+  # Output of summary
+  output$random_summary3 <- renderTable({
+    data.frame(
+      N = as.character(input$n),
+      Median = as.character(round(median(random_points3()),2)),
+      Mean = as.character(round(mean(random_points3()),2)),
+      SD = as.character(round(sd(random_points3()),2)),
+      Min = as.character(round(min(random_points3()),2)),
+      Max = as.character(round(max(random_points3()),2)),
+      Skweeness = as.character(round(skewness(random_points3()),2)),
+      Kurtosis = as.character(round(kurtosis(random_points3()),2))
+    )
+  }, width = "100%")
+    
+    
+    
+    
   })
 }
 

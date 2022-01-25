@@ -79,7 +79,7 @@ ui <- fluidPage(
                )),
                column(4,   wellPanel(
                  # Random sample size
-                 numericInput('n', label='Sample Size', min=0, max=10000, value=50, step=1),
+                 numericInput('n2', label='Sample Size', min=0, max=10000, value=50, step=1),
                  # Button to run the sample size
                  actionButton("do2", "Random"),
                  # Checkbox for displaying density
@@ -87,7 +87,7 @@ ui <- fluidPage(
                  # Condition to display smoothness when selected the checkbox
                  conditionalPanel(
                    condition="input.dens2 % 2 == 1",
-                   sliderInput('dens_smooth', label='Density Smoothness',
+                   sliderInput('dens_smooth2', label='Density Smoothness',
                                min=0.1, 5, value=0.5, step=.1))
                )),
                # Plot of simulated Sample
@@ -115,7 +115,7 @@ ui <- fluidPage(
                )),
                column(4,   wellPanel(
                  # Random sample size
-                 numericInput('n', label='Sample Size', min=0, max=10000, value=50, step=1),
+                 numericInput('n3', label='Sample Size', min=0, max=10000, value=50, step=1),
                  # Button to run the sample size
                  actionButton("do3", "Random"),
                  # Checkbox for displaying density
@@ -123,7 +123,7 @@ ui <- fluidPage(
                  # Condition to display smoothness when selected the checkbox
                  conditionalPanel(
                    condition="input.dens3 % 2 == 1",
-                   sliderInput('dens_smooth', label='Density Smoothness',
+                   sliderInput('dens_smooth3', label='Density Smoothness',
                                min=0.1, 5, value=0.5, step=.1))
                )
                ),
@@ -244,7 +244,7 @@ server <- function(input, output) {
   
   # Output of random button
   random_points2 <- eventReactive(input$do2, {
-    plot_random_type('rbinomial', input$n, input$binomsize, input$binomprob)
+    plot_random_type('rbinomial', input$n2, input$binomsize, input$binomprob)
   }, ignoreNULL = FALSE)
   
   
@@ -254,14 +254,14 @@ server <- function(input, output) {
     # Checkbox to show density curve overlayed on the histogram
     if(input$dens2 == TRUE){
       # Plot density curve overlayed on the histogram
-      lines(density(random_points2(), bw=input$dens_smooth), col="red")
+      lines(density(random_points2(), bw=input$dens_smooth2), col="red")
     }
   })
   
   # Output of summary
   output$random_summary2 <- renderTable({
     data.frame(
-      N = as.character(input$n),
+      N = as.character(input$n2),
       Median = as.character(round(median(random_points2()),2)),
       Mean = as.character(round(mean(random_points2()),2)),
       SD = as.character(round(sd(random_points2()),2)),
@@ -288,7 +288,7 @@ server <- function(input, output) {
   
   # Output of random button
   random_points3 <- eventReactive(input$do3, {
-    plot_random_type('rgamma', input$n, input$gammashape, input$gammascale)
+    plot_random_type('rgamma', input$n3, input$gammashape, input$gammascale)
   }, ignoreNULL = FALSE) 
   
   output$simulate3 <- renderPlot({
@@ -297,14 +297,14 @@ server <- function(input, output) {
     
     if(input$dens3 == TRUE){
       # Plot density curve overlayed on the histogram
-      lines(density(random_points3(), bw=input$dens_smooth), col="red")
+      lines(density(random_points3(), bw=input$dens_smooth3), col="red")
     }
   })    
 
   # Output of summary
   output$random_summary3 <- renderTable({
     data.frame(
-      N = as.character(input$n),
+      N = as.character(input$n3),
       Median = as.character(round(median(random_points3()),2)),
       Mean = as.character(round(mean(random_points3()),2)),
       SD = as.character(round(sd(random_points3()),2)),

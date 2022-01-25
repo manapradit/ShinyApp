@@ -70,8 +70,7 @@ ui <- fluidPage(
              fluidRow(
                # Input for normal density plot
                column(4, wellPanel(
-                 sliderInput('binomx', label='Vector of quantiles', min=-10, max=20, value=c(-5,10), step=1),
-                 sliderInput('binomsize', label='Number of trials', min=0, max=10, value=8, step=1),
+                 sliderInput('binomsize', label='Number of trials', min=0, max=20, value=8, step=1),
                  sliderInput('binomprob', label='Probability of success on each trial', min=0, max=1, value=0.5, step=.01),
                )),
                # Plot of normal density
@@ -167,7 +166,7 @@ plot_random_type2 <-function(rtype, input0, input1, input2, input3) {
       rbinom(n=input1, size=input2, prob=input3) #size=input$binomsize, prob=input$binomprob
     }
     else if (rtype == 'rgamma'){
-      rgamma(n=input1, shape=input2, rate=input3)
+      rgamma(n=input1, shape=input2, scale=input3)
     }    
   }, ignoreNULL = FALSE)}
 
@@ -250,9 +249,9 @@ server <- function(input, output) {
   
   # TAB 2 Output binomial distribution
   output$binomdist <- renderPlot({
-    y <- dbinom(x=input$binomx[1]:input$binomx[2], size=input$binomsize, prob=input$binomprob)
-    plot(y, type='l', ylim=c(0, 1), xlim = c(-10,30),
-         ylab='Density', main='Plot of Binomial density')
+    x <- 0:input$binomsize
+    y <- dbinom(x, size=input$binomsize, prob=input$binomprob)
+    barplot(y,names.arg = x,main="Binomial Distribution",col="lightblue")
   })   
   
   
@@ -294,18 +293,14 @@ server <- function(input, output) {
   
   # Output of random button
   random_points3 <- eventReactive(input$do3, {
-    plot_random_type('rgamma', input$n, input$gammashape, input$gammarate)
+    plot_random_type('rgamma', input$n, input$gammashape, input$gammascale)
   }, ignoreNULL = FALSE) 
   
   output$simulate3 <- renderPlot({
     hist(random_points3(), freq=FALSE, #ylim=c(0, .4), xlim=c(-10,20),
          ylab='Density', xlab='Random Samples', main='Plot of simulated sample')
     
-    # Checkbox to show density curve overlayed on the histogram
-    if(input$dens == TRUE){
-      # Plot density curve overlayed on the histogram
-      lines(density(random_points(), bw=input$dens_smooth), col="red")
-    }
+
   })
 }
 

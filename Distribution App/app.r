@@ -1,7 +1,4 @@
 # Distribution App
-# I added tabs for binomial and gamma distributions.
-# But the random sample's button is still linked to the normal sampling (first tab). 
-# So, there is no change when you click on the random button in the binomial and gamma tabs.
 
 library(shiny)
 library(moments)
@@ -27,6 +24,8 @@ random_tab <- function(){
 ###############################    UI    ####################################
 ui <- fluidPage(
   tabsetPanel(
+    
+    # TAB 1 Normal distribution -----------------------------------------------------    
     tabPanel("Normal",
              wellPanel(h2('The Normal Density'),
                        'The effect of the mean and the standard deviation'),
@@ -48,10 +47,10 @@ ui <- fluidPage(
                  # Button to run the sample size
                  actionButton("do1", "Random"),
                  # Checkbox for displaying density
-                 checkboxInput('dens', label='Show the Density Curve', value=FALSE),
+                 checkboxInput('dens1', label='Show the Density Curve', value=FALSE),
                  # Condition to display smoothness when selected the checkbox
                  conditionalPanel(
-                   condition="input.dens % 2 == 1",
+                   condition="input.dens1 % 2 == 1",
                    sliderInput('dens_smooth', label='Density Smoothness',
                                min=0.1, 5, value=0.5, step=.1))
                )),
@@ -64,6 +63,7 @@ ui <- fluidPage(
     ),
     
     
+    # TAB 2 binomial distribution -----------------------------------------------------
     tabPanel("Binomial",
              wellPanel(h2('The Binomial Density'),
                        'The effect of the number of trials and the probability of success'),
@@ -83,10 +83,10 @@ ui <- fluidPage(
                  # Button to run the sample size
                  actionButton("do2", "Random"),
                  # Checkbox for displaying density
-                 checkboxInput('dens', label='Show the Density Curve', value=FALSE),
+                 checkboxInput('dens2', label='Show the Density Curve', value=FALSE),
                  # Condition to display smoothness when selected the checkbox
                  conditionalPanel(
-                   condition="input.dens % 2 == 1",
+                   condition="input.dens2 % 2 == 1",
                    sliderInput('dens_smooth', label='Density Smoothness',
                                min=0.1, 5, value=0.5, step=.1))
                )),
@@ -99,6 +99,7 @@ ui <- fluidPage(
     ),
     
     
+    # TAB 3 Gamma distribution --------------------------------------------------------
     tabPanel("Gamma",
              wellPanel(h2('The Gamma Density'),
                        'The effect of the number of trials and the probability of success'),
@@ -118,10 +119,10 @@ ui <- fluidPage(
                  # Button to run the sample size
                  actionButton("do3", "Random"),
                  # Checkbox for displaying density
-                 checkboxInput('dens', label='Show the Density Curve', value=FALSE),
+                 checkboxInput('dens3', label='Show the Density Curve', value=FALSE),
                  # Condition to display smoothness when selected the checkbox
                  conditionalPanel(
-                   condition="input.dens % 2 == 1",
+                   condition="input.dens3 % 2 == 1",
                    sliderInput('dens_smooth', label='Density Smoothness',
                                min=0.1, 5, value=0.5, step=.1))
                )
@@ -155,7 +156,6 @@ plot_random_type <-function(rtype, input1, input2, input3) {
 
 
 
-
 # Function v.2 for type of the random sampling plot (With input$do)
 plot_random_type2 <-function(rtype, input0, input1, input2, input3) {
   eventReactive(input0, {
@@ -175,7 +175,7 @@ plot_random_type2 <-function(rtype, input0, input1, input2, input3) {
 ###############################   Server  ####################################
 
 server <- function(input, output) {
-  # TAB 1 Output normal distribution
+  # TAB 1 Output normal distribution -----------------------------------------------------
   output$normaldist <- renderPlot({
     x <- seq(from=-12, to=22, by=.1)
     y <- dnorm(x, mean=input$mu, sd=input$sigma)
@@ -204,22 +204,13 @@ server <- function(input, output) {
   }, ignoreNULL = FALSE)
   
   
-  
-  #random_points <- plot_random_type2('rnormal', input$do, input$n, input$mu, input$sigma)
-  
-  
-  
   # Add output of simulated sample plot and density
   output$simulate1 <- renderPlot({
-    #par(oma = c(4, 0, 0, 0)) # to add margin under plot
     # Plot histogram of sample points
     hist(random_points(), freq=FALSE, ylim=c(0, .4), xlim=c(-10,20),
          ylab='Density', xlab='Random Samples', main='Plot of simulated sample')
-    #plot_text=paste("Mean = ", round(mean(x),3), ", SD = ", round(sd(x),3)) #To add mean=, sd= under plot
-    #mtext(text=plot_text, side=1, line=6, outer = FALSE) #To add mean=, sd= under plot
-    
     # Checkbox to show density curve overlayed on the histogram
-    if(input$dens == TRUE){
+    if(input$dens1 == TRUE){
       # Plot density curve overlayed on the histogram
       lines(density(random_points(), bw=input$dens_smooth), col="red")
     }
@@ -228,10 +219,6 @@ server <- function(input, output) {
   # Output of summary
   output$random_summary1 <- renderTable({
     data.frame(
-      #      Name = c("Mean", "SD"),
-      #      Value = as.character(c(round(mean(random_points()),2), 
-      #                             round(sd(random_points()),2)
-      #                           ))
       N = as.character(input$n),
       Median = as.character(round(median(random_points()),2)),
       Mean = as.character(round(mean(random_points()),2)),
@@ -247,7 +234,7 @@ server <- function(input, output) {
   
   
   
-  # TAB 2 Output binomial distribution
+  # TAB 2 Output binomial distribution -----------------------------------------------------
   output$binomdist <- renderPlot({
     x <- 0:input$binomsize
     y <- dbinom(x, size=input$binomsize, prob=input$binomprob)
@@ -261,19 +248,13 @@ server <- function(input, output) {
   }, ignoreNULL = FALSE)
   
   
-  
-  #random_points2 <- plot_random_type2('rbinomial', input$do, input$n, input$binomsize, input$binomprob)
-  
-  
-  
   output$simulate2 <- renderPlot({
-    hist(random_points2(), freq=FALSE, #ylim=c(0, .4), xlim=c(-10,20),
+    hist(random_points2(), freq=FALSE, 
          ylab='Density', xlab='Random Samples', main='Plot of simulated sample')
-    
     # Checkbox to show density curve overlayed on the histogram
-    if(input$dens == TRUE){
+    if(input$dens2 == TRUE){
       # Plot density curve overlayed on the histogram
-      lines(density(random_points(), bw=input$dens_smooth), col="red")
+      lines(density(random_points2(), bw=input$dens_smooth), col="red")
     }
   })
   
@@ -293,12 +274,14 @@ server <- function(input, output) {
   
   
   
-  # TAB 3 Output gamma distribution
+  
+  
+  # TAB 3 Output gamma distribution ------------------------------------------------------
   output$gammadist <- renderPlot({
     x <- seq(0, 100, by = 0.1)
     y <- dgamma(x, shape=input$gammashape, scale=input$gammascale)
 
-    plot(x,y, type='l', #ylim=c(0, 5), xlim = c(-10,50),
+    plot(x,y, type='l', 
          ylab='Density', main='Plot of Gamma density')
   })   
   
@@ -309,9 +292,14 @@ server <- function(input, output) {
   }, ignoreNULL = FALSE) 
   
   output$simulate3 <- renderPlot({
-    hist(random_points3(), freq=FALSE, #ylim=c(0, .4), xlim=c(-10,20),
+    hist(random_points3(), freq=FALSE, 
          ylab='Density', xlab='Random Samples', main='Plot of simulated sample')
     
+    if(input$dens3 == TRUE){
+      # Plot density curve overlayed on the histogram
+      lines(density(random_points3(), bw=input$dens_smooth), col="red")
+    }
+  })    
 
   # Output of summary
   output$random_summary3 <- renderTable({
@@ -328,9 +316,7 @@ server <- function(input, output) {
   }, width = "100%")
     
     
-    
-    
-  })
+
 }
 
 shinyApp(ui = ui, server = server, options=list(height=600))

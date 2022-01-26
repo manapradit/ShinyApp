@@ -102,11 +102,11 @@ ui <- fluidPage(
     # TAB 3 Gamma distribution --------------------------------------------------------
     tabPanel("Gamma",
              wellPanel(h2('The Gamma Density'),
-                       'The effect of the number of trials and the probability of success'),
+                       'The effect of the shape and scale'),
              fluidRow(
                # Input for normal density plot
                column(4, wellPanel(
-                 sliderInput('gammashape', label='Shape', min=0, max=10, value=3, step=0.1),
+                 sliderInput('gammashape', label='Shape', min=0, max=10, value=3, step=.1),
                  sliderInput('gammascale', label='Scale', min=0, max=10, value=2, step=.1),
                )),
                # Plot of normal density
@@ -142,7 +142,7 @@ ui <- fluidPage(
 ##############################   Function  ##################################
 
 # Function for type of the random sampling plot (Without input$do)
-plot_random_type <-function(rtype, input1, input2, input3) {
+plot_random_type <- function(rtype, input1, input2, input3) {
   if (rtype == 'rnormal') {
     rnorm(n=input1, mean=input2, sd=input3) #mean=input$mu, sd=input$sigma)
   }
@@ -150,25 +150,25 @@ plot_random_type <-function(rtype, input1, input2, input3) {
     rbinom(n=input1, size=input2, prob=input3) #size=input$binomsize, prob=input$binomprob
   }
   else if (rtype == 'rgamma'){
-    rgamma(n=input1, shape=input2, rate=input3)
+    rgamma(n=input1, shape=input2, scale=input3)
   }
 }
 
-
-
-# Function v.2 for type of the random sampling plot (With input$do)
-plot_random_type2 <-function(rtype, input0, input1, input2, input3) {
-  eventReactive(input0, {
-    if (rtype == 'rnormal') {
-      rnorm(n=input1, mean=input2, sd=input3) #mean=input$mu, sd=input$sigma)
-    }
-    else if (rtype == 'rbinomial'){
-      rbinom(n=input1, size=input2, prob=input3) #size=input$binomsize, prob=input$binomprob
-    }
-    else if (rtype == 'rgamma'){
-      rgamma(n=input1, shape=input2, scale=input3)
-    }    
-  }, ignoreNULL = FALSE)}
+# Function for summary table of the sample data
+summary_table <- function(random_point){
+  renderTable({
+    data.frame(
+      N = as.character(length(random_point())),
+      Median = as.character(round(median(random_point()),2)),
+      Mean = as.character(round(mean(random_point()),2)),
+      SD = as.character(round(sd(random_point()),2)),
+      Min = as.character(round(min(random_point()),2)),
+      Max = as.character(round(max(random_point()),2)),
+      Skweeness = as.character(round(skewness(random_point()),2)),
+      Kurtosis = as.character(round(kurtosis(random_point()),2))
+    )
+  }, width = "100%")
+}
 
 
 
@@ -217,23 +217,12 @@ server <- function(input, output) {
   })
   
   # Output of summary
-  output$random_summary1 <- renderTable({
-    data.frame(
-      N = as.character(input$n),
-      Median = as.character(round(median(random_points()),2)),
-      Mean = as.character(round(mean(random_points()),2)),
-      SD = as.character(round(sd(random_points()),2)),
-      Min = as.character(round(min(random_points()),2)),
-      Max = as.character(round(max(random_points()),2)),
-      Skweeness = as.character(round(skewness(random_points()),2)),
-      Kurtosis = as.character(round(kurtosis(random_points()),2))
-    )
-  }, width = "100%")
+  output$random_summary1 <- summary_table(random_points)
   
+
+
   
-  
-  
-  
+
   # TAB 2 Output binomial distribution -----------------------------------------------------
   output$binomdist <- renderPlot({
     x <- 0:input$binomsize
@@ -259,18 +248,7 @@ server <- function(input, output) {
   })
   
   # Output of summary
-  output$random_summary2 <- renderTable({
-    data.frame(
-      N = as.character(input$n2),
-      Median = as.character(round(median(random_points2()),2)),
-      Mean = as.character(round(mean(random_points2()),2)),
-      SD = as.character(round(sd(random_points2()),2)),
-      Min = as.character(round(min(random_points2()),2)),
-      Max = as.character(round(max(random_points2()),2)),
-      Skweeness = as.character(round(skewness(random_points2()),2)),
-      Kurtosis = as.character(round(kurtosis(random_points2()),2))
-    )
-  }, width = "100%")
+  output$random_summary2 <- summary_table(random_points2)
   
   
   
@@ -278,7 +256,7 @@ server <- function(input, output) {
   
   # TAB 3 Output gamma distribution ------------------------------------------------------
   output$gammadist <- renderPlot({
-    x <- seq(0, 100, by = 0.1)
+    x <- seq(0, 100, by = .1)
     y <- dgamma(x, shape=input$gammashape, scale=input$gammascale)
 
     plot(x,y, type='l', 
@@ -292,7 +270,7 @@ server <- function(input, output) {
   }, ignoreNULL = FALSE) 
   
   output$simulate3 <- renderPlot({
-    hist(random_points3(), freq=FALSE, 
+    hist(random_points3(), freq=FALSE, xlim=c(0,100),
          ylab='Density', xlab='Random Samples', main='Plot of simulated sample')
     
     if(input$dens3 == TRUE){
@@ -302,18 +280,7 @@ server <- function(input, output) {
   })    
 
   # Output of summary
-  output$random_summary3 <- renderTable({
-    data.frame(
-      N = as.character(input$n3),
-      Median = as.character(round(median(random_points3()),2)),
-      Mean = as.character(round(mean(random_points3()),2)),
-      SD = as.character(round(sd(random_points3()),2)),
-      Min = as.character(round(min(random_points3()),2)),
-      Max = as.character(round(max(random_points3()),2)),
-      Skweeness = as.character(round(skewness(random_points3()),2)),
-      Kurtosis = as.character(round(kurtosis(random_points3()),2))
-    )
-  }, width = "100%")
+  output$random_summary3 <- summary_table(random_points3)
     
     
 

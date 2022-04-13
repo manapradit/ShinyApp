@@ -242,48 +242,55 @@ server <- function(input, output, session) {
   
 # Axes setting  
   observeEvent( input$axes== 'adjust', {
-    if (input$distribution == 'binomial'| 
-        input$distribution == 'pois') {
-      updateNumericInput(session, "minx", value=0)
-      updateNumericInput(session, "maxx", value=25)
-      updateNumericInput(session, "maxy", value=1)
-    } else if (input$distribution == 'geom'){
-      updateNumericInput(session, "minx", value=0)
-      updateNumericInput(session, "maxx", value=5)
-      updateNumericInput(session, "maxy", value=1)
-    } else if (input$distribution == 'beta'){
-      updateNumericInput(session, "minx", value=0)
-      updateNumericInput(session, "maxx", value=1)
-      updateNumericInput(session, "maxy", value=12)
-    } else if (input$distribution == 'chisq'){
-      updateNumericInput(session, "minx", value=0)
-      updateNumericInput(session, "maxx", value=20)
-      updateNumericInput(session, "maxy", value=2)
-    } else if (input$distribution == 'exp'){
-      updateNumericInput(session, "minx", value=0)
-      updateNumericInput(session, "maxx", value=10)
-      updateNumericInput(session, "maxy", value=6)
-    } else if (input$distribution == 'f'){
-      updateNumericInput(session, "minx", value=-0.5)
-      updateNumericInput(session, "maxx", value=10)
-      updateNumericInput(session, "maxy", value=1)
-    } else if (input$distribution == 'gamma'){
-      updateNumericInput(session, "minx", value=-5)
-      updateNumericInput(session, "maxx", value=50)
-      updateNumericInput(session, "maxy", value=1)
-    } else if (input$distribution == 'normal'){
-      updateNumericInput(session, "minx", value=-16)
-      updateNumericInput(session, "maxx", value=16)
-      updateNumericInput(session, "maxy", value=0.5)
-    } else if (input$distribution == 't'){
-      updateNumericInput(session, "minx", value=-16)
-      updateNumericInput(session, "maxx", value=16)
-      updateNumericInput(session, "maxy", value=0.5)
-    } else if (input$distribution == 'unif'){
-      updateNumericInput(session, "minx", value=-10)
-      updateNumericInput(session, "maxx", value=10)
-      updateNumericInput(session, "maxy", value=1)
-    }
+    updateNumericInput(session, "minx", value=xl()[1])
+    updateNumericInput(session, "maxx", value=xl()[2])
+    updateNumericInput(session, "maxy", value=yl()[2])
+    
+    
+    # if (input$distribution == 'binomial'|
+    #     input$distribution == 'pois') {
+    #   updateNumericInput(session, "minx", value=0)
+    #   updateNumericInput(session, "maxx", value=25)
+    #   updateNumericInput(session, "maxy", value=1)
+    # } else if (input$distribution == 'geom'){
+    #   updateNumericInput(session, "minx", value=0)
+    #   updateNumericInput(session, "maxx", value=5)
+    #   updateNumericInput(session, "maxy", value=1)
+    # } else if (input$distribution == 'beta'){
+    #   updateNumericInput(session, "minx", value=0)
+    #   updateNumericInput(session, "maxx", value=1)
+    #   updateNumericInput(session, "maxy", value=12)
+    # } else if (input$distribution == 'chisq'){
+    #   updateNumericInput(session, "minx", value=0)
+    #   updateNumericInput(session, "maxx", value=20)
+    #   updateNumericInput(session, "maxy", value=2)
+    # } else if (input$distribution == 'exp'){
+    #   updateNumericInput(session, "minx", value=0)
+    #   updateNumericInput(session, "maxx", value=10)
+    #   updateNumericInput(session, "maxy", value=6)
+    # } else if (input$distribution == 'f'){
+    #   updateNumericInput(session, "minx", value=-0.5)
+    #   updateNumericInput(session, "maxx", value=10)
+    #   updateNumericInput(session, "maxy", value=1)
+    # } else if (input$distribution == 'gamma'){
+    #   updateNumericInput(session, "minx", value=-5)
+    #   updateNumericInput(session, "maxx", value=50)
+    #   updateNumericInput(session, "maxy", value=1)
+    # } else if (input$distribution == 'normal'){
+    #   updateNumericInput(session, "minx", value=-16)
+    #   updateNumericInput(session, "maxx", value=16)
+    #   updateNumericInput(session, "maxy", value=0.5)
+    # } else if (input$distribution == 't'){
+    #   updateNumericInput(session, "minx", value=-16)
+    #   updateNumericInput(session, "maxx", value=16)
+    #   updateNumericInput(session, "maxy", value=0.5)
+    # } else if (input$distribution == 'unif'){
+    #   updateNumericInput(session, "minx", value=-10)
+    #   updateNumericInput(session, "maxx", value=10)
+    #   updateNumericInput(session, "maxy", value=1)
+    # }
+    
+    
   })
   
 

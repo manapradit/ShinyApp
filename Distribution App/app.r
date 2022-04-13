@@ -25,12 +25,11 @@ ui <- fluidPage(
                          list("Binomial" = "binomial", 
                               "Geometric" = "geom", 
                               "Poisson" = "pois")
-                       
                   )
       ),  
       
-      
-      
+
+            
       
       conditionalPanel(
         condition = "input.distribution == 'beta'",
@@ -66,7 +65,7 @@ ui <- fluidPage(
       ), 
       conditionalPanel(
         condition = "input.distribution == 'normal'",
-        sliderInput("mean", "Mean: ", min=0, max=10, value=3, step = 0.1),
+        sliderInput("mean", "Mean: ", min=-10, max=10, value=3, step = 0.1),
         sliderInput("sd", "Standard Deviation: ", min=1, max=4, value=2, step=0.1)
       ),
       conditionalPanel(
@@ -80,7 +79,27 @@ ui <- fluidPage(
       conditionalPanel(
         condition = "input.distribution == 'unif'",
         sliderInput("range", "Lower and Upper limits of the distribution (Min and Max): ", min=-10, max=10, value=c(0,5), step=0.5)
-      )
+      ),
+      
+      
+
+            
+      # Axes setting
+      selectInput("axes", "Fixed X-axis and Y-axis Options:",
+                  list("Default" = "default", 
+                       "Adjust Value" = "adjust",
+                       "Best fit" = "best"
+                       )
+                                    
+      ),
+      conditionalPanel(
+        condition = "input.axes == 'adjust'",
+        numericInput("minx", "Minimum X-axis", value=-1, step=0.05),
+        numericInput("maxx", "Maximum X-axis", value=10, step=0.05), 
+        numericInput("maxy", "Maximum Y-axis", value=1, step=0.05)  
+        
+      )      
+      
     ),
     
     
@@ -92,6 +111,9 @@ ui <- fluidPage(
 )
 
 
+
+
+
 server <- function(input, output, session) {
   
   xrange <- {reactive({
@@ -100,8 +122,7 @@ server <- function(input, output, session) {
       min <- qbeta(0.001, shape1=input$shape1, shape2=input$shape2)
       max <- qbeta(0.999, shape1=input$shape1, shape2=input$shape2)
       return(
-        seq(from=0, to=1, length=200)
-        #seq(from=min(min), to=max(max), length=200)
+        seq(from=min(min), to=max(max), length=200)
       )
     } else if (input$distribution == 'binomial'){
       return(
@@ -132,10 +153,10 @@ server <- function(input, output, session) {
         seq(from=min, to=max, length=200)
       )
     } else if(input$distribution == 'geom'){
-      min <- qpois(0.001, input$prob_geom)
-      max <- qpois(0.999, input$prob_geom)
+      min <- qgeom(0.001, input$prob_geom)
+      max <- qgeom(0.999, input$prob_geom)
       return(
-        round(seq(from=min, to=max, length=200)) # Use round() to create only integer
+        round(seq(from=min, to=max, length=200))
       )
     } else if (input$distribution == 'normal'){
       min <- qnorm(0.001, input$mean, input$sd)
@@ -147,7 +168,7 @@ server <- function(input, output, session) {
       min <- qpois(0.001, input$lambda)
       max <- qpois(0.999, input$lambda)
       return(
-        round(seq(from=min, to=max, length=200)) # Use round() to create only integer
+        round(seq(from=min, to=max, length=200))
       )
     } else if (input$distribution == 't'){
       min <- qt(0.001, df=input$df_t)
@@ -159,7 +180,7 @@ server <- function(input, output, session) {
       min <- qunif(0.001, min=input$range[1], max=input$range[2])
       max <- qunif(0.999, min=input$range[1], max=input$range[2])
       return(
-        seq(from=min-20, to=max+20, length=200)  # Can I -+20 to make the vertical lines at the end of both side?
+        seq(from=min-1, to=max+1, length=200)
       )
     }
   }
@@ -216,42 +237,144 @@ server <- function(input, output, session) {
   })
   
   
+  
+  
+  
+# Axes setting  
+  observeEvent( input$axes== 'adjust', {
+    if (input$distribution == 'binomial'| 
+        input$distribution == 'pois') {
+      updateNumericInput(session, "minx", value=0)
+      updateNumericInput(session, "maxx", value=25)
+      updateNumericInput(session, "maxy", value=1)
+    } else if (input$distribution == 'geom'){
+      updateNumericInput(session, "minx", value=0)
+      updateNumericInput(session, "maxx", value=5)
+      updateNumericInput(session, "maxy", value=1)
+    } else if (input$distribution == 'beta'){
+      updateNumericInput(session, "minx", value=0)
+      updateNumericInput(session, "maxx", value=1)
+      updateNumericInput(session, "maxy", value=12)
+    } else if (input$distribution == 'chisq'){
+      updateNumericInput(session, "minx", value=0)
+      updateNumericInput(session, "maxx", value=20)
+      updateNumericInput(session, "maxy", value=2)
+    } else if (input$distribution == 'exp'){
+      updateNumericInput(session, "minx", value=0)
+      updateNumericInput(session, "maxx", value=10)
+      updateNumericInput(session, "maxy", value=6)
+    } else if (input$distribution == 'f'){
+      updateNumericInput(session, "minx", value=-0.5)
+      updateNumericInput(session, "maxx", value=10)
+      updateNumericInput(session, "maxy", value=1)
+    } else if (input$distribution == 'gamma'){
+      updateNumericInput(session, "minx", value=-5)
+      updateNumericInput(session, "maxx", value=50)
+      updateNumericInput(session, "maxy", value=1)
+    } else if (input$distribution == 'normal'){
+      updateNumericInput(session, "minx", value=-16)
+      updateNumericInput(session, "maxx", value=16)
+      updateNumericInput(session, "maxy", value=0.5)
+    } else if (input$distribution == 't'){
+      updateNumericInput(session, "minx", value=-16)
+      updateNumericInput(session, "maxx", value=16)
+      updateNumericInput(session, "maxy", value=0.5)
+    } else if (input$distribution == 'unif'){
+      updateNumericInput(session, "minx", value=-10)
+      updateNumericInput(session, "maxx", value=10)
+      updateNumericInput(session, "maxy", value=1)
+    }
+  })
+  
+
+  
+
+  yl <- reactive({
+    
+    if (input$axes == 'default'){
+      if (input$distribution == 'binomial'| 
+          input$distribution == 'pois'|
+          input$distribution == 'geom'|
+          input$distribution == 'f'|
+          input$distribution == 'gamma'|
+          input$distribution == 'unif'){
+        return(ylim=c(0,1))
+      } else if (input$distribution == 'beta'){
+        return(ylim=c(0,12))
+      } else if (input$distribution == 'chisq'){
+        return(ylim=c(0,2))
+      } else if (input$distribution == 'exp'){
+        return(ylim=c(0,6))
+      } else if (input$distribution == 'normal'){
+        return(ylim=c(0,0.5))
+      } else if (input$distribution == 't'){
+        return(ylim=c(0,0.5))
+      }
+    } else if (input$axes == 'adjust'){
+      return(ylim=c(0,input$maxy))
+    } else {
+    }
+  })
+  
+  
+  
+  
+  
+  xl <- reactive({
+    
+    if (input$axes == 'default'){
+      if (input$distribution == 'binomial'| 
+          input$distribution == 'pois') {  #
+        return(xlim=c(0,25))
+      } else if (input$distribution == 'geom'){
+        return(xlim=c(0,5))
+      } else if (input$distribution == 'beta'){
+        return(xlim=c(0,1))
+      } else if (input$distribution == 'chisq'){
+        return(xlim=c(0,20))
+      } else if (input$distribution == 'exp'){
+        return(xlim=c(0,10))
+      } else if (input$distribution == 'f'){
+        return(xlim=c(-0.5,10))
+      } else if (input$distribution == 'gamma'){
+        return(xlim=c(-5,50))
+      } else if (input$distribution == 'normal'){
+        return(xlim=c(-16,16))
+      } else if (input$distribution == 't'){
+        return(xlim=c(-10,10))
+      } else if (input$distribution == 'unif'){
+        return(xlim=c(-10,10))
+      }
+      
+    } else if (input$axes == 'adjust'){
+
+
+      return(xlim=c(input$minx,input$maxx))     
+      
+    } else {
+    }
+  })
+  
+
+  
+  
+  
+  
   output$density <- renderPlot({
     
     if(input$distribution == 'binomial' |
        input$distribution == 'pois' ){
-      plot(xrange(), y(), type="h", lwd = 5, ylab="Density", xlab="x", ylim=c(0,1), xlim=c(0,25), col="Sky Blue")
+      plot(xrange(), y(), xlim = xl(),  ylim=yl(), type="h", 
+           ylab="Probability", xlab="x", lwd = 5, col="Sky Blue")
       
     } else if (input$distribution == 'geom'){
-      plot(xrange(), y(), type="h", lwd = 5, ylab="Density", xlab="x", ylim=c(0,1), xlim=c(0,5), xaxt='n', col="Sky Blue") 
+      plot(xrange(), y(), xlim = xl(),  ylim=yl(), type="h", 
+           ylab="Probability", xlab="x",  lwd = 5, col="Sky Blue", xaxt='n') 
       axis(side=1, at=c(0,1,2,3,4,5))
       
-    } else if (input$distribution == 'beta'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,12), xlim=c(0,1), lwd = 2, col="Sky Blue")    
-      
-    } else if (input$distribution == 'chisq'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,2), xlim=c(0,20), lwd = 2, col="Sky Blue")      
-      
-    } else if (input$distribution == 'exp'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,6), xlim=c(0,10), lwd = 2, col="Sky Blue")   
-      
-    } else if (input$distribution == 'f'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,1), xlim=c(-0.5,10), lwd = 2, col="Sky Blue") 
-      
-    } else if (input$distribution == 'gamma'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,1), xlim=c(-5,50), lwd = 2, col="Sky Blue")   
-      
-    } else if (input$distribution == 'normal'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,0.5), xlim=c(-6,16), lwd = 2, col="Sky Blue")
-      
-    } else if (input$distribution == 't'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,0.5), xlim=c(-10,10), lwd = 2, col="Sky Blue")  
-      
-    } else if (input$distribution == 'unif'){
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x", ylim=c(0,1), xlim=c(-10,10), lwd = 2, col="Sky Blue")  
-      
     } else{
-      plot(xrange(), y(), type="l", ylab="Density", xlab="x")
+      plot(xrange(), y(), xlim = xl(), ylim=yl(), type="l", 
+           ylab="Density", xlab="x", lwd = 2, col="Sky Blue")
     }
   })
   
